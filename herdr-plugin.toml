@@ -1,0 +1,50 @@
+id = "pane-goal-session"
+name = "Pane Goal & Session"
+version = "0.2.0"
+min_herdr_version = "0.9.0"
+description = "Persistent per-pane goal and agent session ID with copy-ready resume command, shown in the sidebar."
+platforms = ["linux", "macos"]
+
+# Re-publish saved goals/sessions after Herdr restores the session (token
+# metadata is not restored by Herdr itself).
+[[startup]]
+command = ["python3", "goal.py", "restore"]
+
+# Bind this to a key: command = "pane-goal-session.edit"
+[[actions]]
+id = "edit"
+title = "Edit pane goal & session"
+description = "Popup to set the focused pane's goal and session ID, and copy its resume command."
+command = ["python3", "goal.py", "open-editor"]
+
+[[actions]]
+id = "restore"
+title = "Restore pane goals"
+description = "Re-publish all saved goals and sessions to the sidebar."
+command = ["python3", "goal.py", "restore"]
+
+# Keep state in sync with pane lifecycle.
+[[events]]
+on = "pane.closed"
+command = ["python3", "goal.py", "event"]
+
+[[events]]
+on = "pane.moved"
+command = ["python3", "goal.py", "event"]
+
+# Record agent session IDs automatically.
+[[events]]
+on = "pane.agent_detected"
+command = ["python3", "goal.py", "event"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["python3", "goal.py", "event"]
+
+[[panes]]
+id = "editor"
+title = "Pane goal & session"
+placement = "popup"
+width = "90%"
+height = 16
+command = ["python3", "goal.py", "editor"]
